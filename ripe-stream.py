@@ -8,7 +8,8 @@ import time
 import radix
 import websocket
 
-url = "wss://ris-live.ripe.net/v1/ws/?client=username_at_example_com"
+## Uncomment and update this with a unique identifier for the RIPE team
+#url = "wss://ris-live.ripe.net/v1/ws/?client=username_at_example_com"
 
 tree = radix.Radix()
 
@@ -32,6 +33,7 @@ with open(prefix_file) as fp:
 while True:
     ws = websocket.WebSocket()
     ws.connect(url)
+    # subscribe to all BGP Updates
     ws.send(json.dumps({"type": "ris_subscribe", "data": {"type": "UPDATE"}}))
     try:
         for data in ws:
@@ -48,6 +50,7 @@ while True:
                             print("search_best: %s returned " % prefix, e)
                         if rnode is not None and rnode.data['metadata'] is not None:
                             as_path = ' '.join(str(x) for x in parsed_data.get('path', None))
+                            # Is it a more specific?
                             if prefix != rnode.prefix:
                                 sub_prefix = "Yes"
                             else:
