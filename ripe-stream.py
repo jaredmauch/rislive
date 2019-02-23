@@ -25,7 +25,7 @@ with open(prefix_file) as fp:
 
         rnode = tree.add(prefix)
         rnode.data['metadata'] = metadata
-        rnode.data['metaadta2'] = metadata2
+        rnode.data['metadata2'] = metadata2
 
         ## fetch another line
         line = fp.readline()
