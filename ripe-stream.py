@@ -38,25 +38,31 @@ while True:
     try:
         for data in ws:
             parsed = json.loads(data)
-            # print(parsed["type"], parsed["data"])
-            parsed_data = parsed.get("data", None)
-            announcements = parsed_data.get('announcements', None)
-            if announcements is not None:
-                for announcement in announcements:
-                    for prefix in announcement['prefixes']:
-                        try:
-                            rnode = tree.search_best(prefix)
-                        except Exception as e:
-                            print("search_best: %s returned " % prefix, e)
-                        if rnode is not None and rnode.data['metadata'] is not None:
-                            as_path = ' '.join(str(x) for x in parsed_data.get('path', None))
-                            # Is it a more specific?
-                            if prefix != rnode.prefix:
-                                sub_prefix = "Yes"
-                            else:
-                                sub_prefix = ""
-                            print("%s|%s|%s|%s|%s|%s" % (prefix, sub_prefix, rnode.prefix,
-                                  rnode.data['metadata'], rnode.data['metadata2'], as_path))
+            if parsed.get('type', None) == 'ris_error':
+                print(data)
+            if parsed.get('type', None) == 'ris_message':
+                # print(parsed["type"], parsed["data"])
+                parsed_data = parsed.get("data", None)
+                announcements = parsed_data.get('announcements', None)
+                try:
+                    as_path = ' '.join(str(x) for x in parsed_data.get('path', None))
+                except:
+                    as_path = ''
+                if announcements is not None:
+                    for announcement in announcements:
+                        for prefix in announcement['prefixes']:
+                            try:
+                                rnode = tree.search_best(prefix)
+                            except Exception as e:
+                                print("search_best: %s returned " % prefix, e)
+                            if rnode is not None and rnode.data['metadata'] is not None:
+                                # Is it a more specific?
+                                if prefix != rnode.prefix:
+                                    sub_prefix = "Yes"
+                                else:
+                                    sub_prefix = ""
+                                print("%s|%s|%s|%s|%s|%s" % (prefix, sub_prefix, rnode.prefix,
+                                      rnode.data['metadata'], rnode.data['metadata2'], as_path))
     except websocket.WebSocketConnectionClosedException as e:
         print("Disconnected, sleeping for a few then reconnect", e)
         time.sleep(30)
