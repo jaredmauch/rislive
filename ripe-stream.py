@@ -13,9 +13,10 @@ import websocket
 
 tree = radix.Radix()
 
+## File format : CIDR,METADATA,METADATA2
 prefix_file = "/path/to/file/prefixes.csv"
 
-# read in file with prefix,metadata,metadata2
+# load the prefixes to memory
 with open(prefix_file) as fp:
     line = fp.readline()
     while line:
@@ -65,6 +66,24 @@ while True:
                                       rnode.data['metadata'], rnode.data['metadata2'], as_path))
     except websocket.WebSocketConnectionClosedException as e:
         print("Disconnected, sleeping for a few then reconnect", e)
+        time.sleep(30)
+    except ConnectionResetError as e:
+        print("Disconnected, sleeping for a few then reconnect", e)
+        time.sleep(30)
+    except BrokenPipeError as e:
+        print("Disconnected, sleeping for a few then reconnect", e)
+        time.sleep(30)
+    except websocket.WebSocketBadStatusException as e:
+        print("Disconnected, sleeping for a few then reconnect", e)
+        time.sleep(30)
+    except websocket.WebSocketTimeoutException as e:
+        print("Disconnected, sleeping for a few then reconnect", e)
+        time.sleep(30)
+    except KeyboardInterrupt:
+        print("User stop requested")
+        sys.exit()
+    except Exception as e:
+        print("some other error?", e)
         time.sleep(30)
 
 ##
