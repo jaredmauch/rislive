@@ -45,6 +45,7 @@ while True:
                 # print(parsed["type"], parsed["data"])
                 parsed_data = parsed.get("data", None)
                 announcements = parsed_data.get('announcements', None)
+                withdrawls = parsed_data.get('withdrawls', None)
                 try:
                     as_path = ' '.join(str(x) for x in parsed_data.get('path', None))
                 except:
@@ -62,8 +63,24 @@ while True:
                                     sub_prefix = "Yes"
                                 else:
                                     sub_prefix = ""
-                                print("%s|%s|%s|%s|%s|%s" % (prefix, sub_prefix, rnode.prefix,
+                                print("add|%s|%s|%s|%s|%s|%s" % (prefix, sub_prefix, rnode.prefix,
                                       rnode.data['metadata'], rnode.data['metadata2'], as_path))
+                if withdrawls is not None:
+                    for announcement in withdrawls:
+                        for prefix in announcement['prefixes']:
+                            try:
+                                rnode = tree.search_best(prefix)
+                            except Exception as e:
+                                print("search_best: %s returned " % prefix, e)
+                            if rnode is not None and rnode.data['metadata'] is not None:
+                                # Is it a more specific?
+                                if prefix != rnode.prefix:
+                                    sub_prefix = "Yes"
+                                else:
+                                    sub_prefix = ""
+                                print("del|%s|%s|%s|%s|%s|%s" % (prefix, sub_prefix, rnode.prefix,
+                                      rnode.data['metadata'], rnode.data['metadata2'], as_path))
+
     except websocket.WebSocketConnectionClosedException as e:
         print("Disconnected, sleeping for a few then reconnect", e)
         time.sleep(30)
