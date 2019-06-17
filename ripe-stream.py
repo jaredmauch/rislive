@@ -6,6 +6,7 @@
 import json
 import time
 import radix
+import sys
 import websocket
 
 ## Uncomment and update this with a unique identifier for the RIPE team
